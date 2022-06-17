@@ -1,0 +1,15 @@
+[package]
+name = 'neovideo_vlc'
+version = "0.0.1"
+authors = ['visysl@outlook.com']
+edition = "2021"
+
+[dependencies]
+egui_glow = "0.17"
+winit = "0.26"
+glutin = { version = "0.28.0", default-features = false, features = ["serde"] }
+libc = "0.2"
+
+
+[build-dependencies]
+gl_generator = "0.14.0"
