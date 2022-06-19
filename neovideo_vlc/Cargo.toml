@@ -6,6 +6,7 @@ edition = "2021"
 
 [dependencies]
 egui_glow = "0.17"
+egui = "0.17"
 winit = "0.26"
 glutin = { version = "0.28.0", default-features = false, features = ["serde"] }
 libc = "0.2"
