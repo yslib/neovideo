@@ -25,4 +25,11 @@ fn main() {
             .to_owned();
         println!(r"cargo:rustc-link-search=native={}", vlc_lib_path_dir);
     }
+
+    #[cfg(target_os = "windows")]
+    {
+        let dir = env::var("CARGO_MANIFEST_DIR").unwrap();
+        let path = Path::new(&dir).join("lib").to_str().unwrap().to_owned();
+        println!(r"cargo:rustc-link-search=native={}", path);
+    }
 }

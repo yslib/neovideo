@@ -1,0 +1,13 @@
+{
+  "configurations": {
+    "launch": {
+      "adapter": "CodeLLDB",
+      "filetypes": [ "rust" ],
+      "configuration": {
+	      "type":"rust",
+        "request": "launch",
+        "program": "${workspaceRoot}/target/debug/neovideo"
+      }
+    }
+  }
+}
