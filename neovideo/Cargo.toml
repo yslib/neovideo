@@ -9,6 +9,6 @@ edition = "2021"
 neovideo_vlc = {path="../neovideo_vlc"}
 winit = "0.26"
 glutin = { version = "0.28.0", default-features = false, features = ["serde"] }
-egui_glow = {git = "https://github.com/emilk/egui", features=["winit"]}
-egui = {git = "https://github.com/emilk/egui"}
+egui_glow = {git = "https://github.com/emilk/egui", features=["winit"], rev="9c26093fea926ce133fee3f6d3d92e19b37dc4ee"}
+egui = {git = "https://github.com/emilk/egui", rev="9c26093fea926ce133fee3f6d3d92e19b37dc4ee"}
 glow = "0.11.2"
