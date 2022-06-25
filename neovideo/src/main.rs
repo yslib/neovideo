@@ -1,12 +1,14 @@
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
+use std::path::{Path, PathBuf};
+
 use egui_app::{
     egui_app::{AppState, EguiApp},
     winit_egui_event_listener::WinitEguiEventListener,
 };
 use glutin::{event_loop::ControlFlow, ContextWrapper, PossiblyCurrent};
 use neovideo_vlc::vlcvideo::{TextureRender, VLCVideo};
-use winit::window::{WindowBuilder, Window};
+use winit::window::{Window, WindowBuilder, WindowId};
 
 mod egui_app;
 
@@ -52,16 +54,24 @@ impl PlayerWindow {
                 .make_current()
                 .unwrap()
         };
+        let texture_render = TextureRender::new(&window_context);
         let video_decoder = VLCVideo::new(window_context.context(), event_loop);
         PlayerWindow {
-            texture_render: TextureRender::new(&window_context),
+            texture_render,
             window_context: Some(window_context),
             video_decoder,
         }
     }
 
-    pub fn window(&self)->&Window{
+    pub fn window(&self) -> &Window {
         self.window_context.as_ref().unwrap().window()
+    }
+
+    pub fn play<T>(&mut self, path: T)
+    where
+        T: AsRef<Path>,
+    {
+        self.video_decoder.play_media(path);
     }
 
     #[allow(unused)]
@@ -82,6 +92,7 @@ impl PlayerWindow {
         let mut update: bool = false;
         let tex = self.video_decoder.get_video_frame(&mut update);
         if update {
+            println!("render_frame: {}", tex);
             self.texture_render.draw_video_frame(tex);
         }
     }
@@ -106,22 +117,28 @@ fn main() {
     let mut player_window = PlayerWindow::new(&event_loop, window_builder);
 
     let player_winid = player_window.window().id();
+    player_window.play("file:///D:\\movie\\matrix\\matrix.mkv");
 
     event_loop.run(move |event, _, control_flow| {
-        println!("{:?}", event);
+        player_window.render_frame();
+        player_window
+            .window_context
+            .as_ref()
+            .unwrap()
+            .swap_buffers()
+            .unwrap();
         player_window.window().request_redraw();
         match event {
             glutin::event::Event::RedrawEventsCleared if cfg!(windows) => {
                 *control_flow = egui_listener.process_redraw();
                 egui_listener.swap_buffers();
-                player_window.render_frame();
             }
             glutin::event::Event::RedrawRequested(window_id) if !cfg!(windows) => {
-                if window_id == egui_winid{
+                if window_id == egui_winid {
                     *control_flow = egui_listener.process_redraw();
                     egui_listener.swap_buffers();
-                }else if window_id == player_winid{
-                    player_window.render_frame();
+                } else if window_id == player_winid {
+                    println!("redraw request");
                 }
             }
 
