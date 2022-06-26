@@ -71,7 +71,7 @@ impl PlayerWindow {
     where
         T: AsRef<Path>,
     {
-        self.video_decoder.play_media(path);
+        self.video_decoder.play_media(path).unwrap();
     }
 
     #[allow(unused)]
@@ -117,7 +117,10 @@ fn main() {
     let mut player_window = PlayerWindow::new(&event_loop, window_builder);
 
     let player_winid = player_window.window().id();
-    player_window.play("file:///D:\\movie\\matrix\\matrix.mkv");
+    // player_window.play("file:///~/Movies/testmp4.mp4");
+    player_window.play(
+        "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4",
+    );
 
     event_loop.run(move |event, _, control_flow| {
         player_window.render_frame();

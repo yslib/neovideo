@@ -1,4 +1,4 @@
-pub enum AppState{
+pub enum AppState {
     Running,
     Exit,
 }

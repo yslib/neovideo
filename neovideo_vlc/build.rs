@@ -2,6 +2,18 @@ use gl_generator::{Api, Fallbacks, GlobalGenerator, Profile, Registry};
 use std::env;
 use std::fs::File;
 use std::path::Path;
+use std::path::PathBuf;
+
+#[allow(dead_code)]
+fn get_output_path() -> PathBuf {
+    //<root or manifest path>/target/<profile>/
+    let manifest_dir_string = env::var("CARGO_MANIFEST_DIR").unwrap();
+    let build_type = env::var("PROFILE").unwrap();
+    let path = Path::new(&manifest_dir_string)
+        .join("target")
+        .join(build_type);
+    return PathBuf::from(path);
+}
 
 fn main() {
     let out_dir = env::var_os("OUT_DIR").unwrap();
@@ -23,7 +35,8 @@ fn main() {
             .to_str()
             .unwrap()
             .to_owned();
-        println!(r"cargo:rustc-link-search=native={}", vlc_lib_path_dir);
+        println!(r"cargo:rustc-link-search={}", vlc_lib_path_dir);
+        println!(r"cargo:rustc-link-lib=vlc");
     }
 
     #[cfg(target_os = "windows")]

@@ -41,7 +41,7 @@ pub enum Meta {
     Season,
     Episode,
     ShowName,
-    Actors
+    Actors,
 }
 
 #[repr(C)]
@@ -54,16 +54,16 @@ pub enum State {
     Paused,
     Stopped,
     Ended,
-    Error
+    Error,
 }
 
 #[repr(C)]
 #[derive(Clone, Copy, PartialEq, Eq, Hash, Debug)]
 pub enum TrackType {
     Unknown = -1,
-    Audio   = 0,
-    Video   = 1,
-    Text    = 2
+    Audio = 0,
+    Video = 1,
+    Text = 2,
 }
 
 #[repr(C)]
@@ -89,7 +89,7 @@ pub enum VideoAdjustOption {
     Brightness,
     Hue,
     Saturation,
-    Gamma
+    Gamma,
 }
 
 // #[repr(C)]
@@ -160,11 +160,10 @@ pub enum EventType {
     VlmMediaInstanceStatusPlaying,
     VlmMediaInstanceStatusPause,
     VlmMediaInstanceStatusEnd,
-    VlmMediaInstanceStatusError
+    VlmMediaInstanceStatusError,
 }
 
-
-use libc::{c_void, c_int, c_uint, c_char, c_float, uintptr_t, FILE};
+use libc::{c_char, c_float, c_int, c_uint, c_void, uintptr_t, FILE};
 
 pub type c_bool = u8;
 
@@ -193,14 +192,14 @@ pub enum vlc_log_t {}
 
 pub type libvlc_callback_t = unsafe extern "C" fn(*const libvlc_event_t, *mut c_void);
 pub type va_list = *mut c_void;
-pub type libvlc_log_cb = unsafe extern "C" fn(*mut c_void, c_int, *const libvlc_log_t, *const c_char, va_list);
+pub type libvlc_log_cb =
+    unsafe extern "C" fn(*mut c_void, c_int, *const libvlc_log_t, *const c_char, va_list);
 
 pub use LogLevel as libvlc_log_level;
 
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct libvlc_module_description_t
-{
+pub struct libvlc_module_description_t {
     pub psz_name: *const c_char,
     pub psz_shortname: *const c_char,
     pub psz_longname: *const c_char,
@@ -217,35 +216,54 @@ extern "C" {
     pub fn libvlc_add_intf(p_instance: *mut libvlc_instance_t, name: *const c_char) -> c_int;
     pub fn libvlc_set_exit_handler(
         p_instance: *mut libvlc_instance_t,
-        cb: extern "C" fn(*mut c_void), opaque: *mut c_void);
+        cb: extern "C" fn(*mut c_void),
+        opaque: *mut c_void,
+    );
     pub fn libvlc_wait(p_instance: *mut libvlc_instance_t);
     pub fn libvlc_set_user_agent(
-        p_instance: *mut libvlc_instance_t, name: *const c_char, http: *const c_char);
+        p_instance: *mut libvlc_instance_t,
+        name: *const c_char,
+        http: *const c_char,
+    );
     pub fn libvlc_set_app_id(
-        p_instance: *mut libvlc_instance_t, id: *const c_char, version: *const c_char,
-        icon: *const c_char);
+        p_instance: *mut libvlc_instance_t,
+        id: *const c_char,
+        version: *const c_char,
+        icon: *const c_char,
+    );
     pub fn libvlc_get_version() -> *const c_char;
     pub fn libvlc_get_compiler() -> *const c_char;
     pub fn libvlc_get_changeset() -> *const c_char;
     pub fn libvlc_free(ptr: *mut c_void);
     pub fn libvlc_event_attach(
-        p_event_manager: *mut libvlc_event_manager_t, i_event_type: libvlc_event_type_t,
-        f_callback: libvlc_callback_t, user_data: *mut c_void) -> c_int;
+        p_event_manager: *mut libvlc_event_manager_t,
+        i_event_type: libvlc_event_type_t,
+        f_callback: libvlc_callback_t,
+        user_data: *mut c_void,
+    ) -> c_int;
     pub fn libvlc_event_type_name(event_type: libvlc_event_type_t) -> *const c_char;
     pub fn libvlc_log_get_context(
-        ctx: *const libvlc_log_t, module: *const *const c_char, file: *const *const c_char,
-        line: *mut c_uint);
+        ctx: *const libvlc_log_t,
+        module: *const *const c_char,
+        file: *const *const c_char,
+        line: *mut c_uint,
+    );
     pub fn libvlc_log_get_object(
-        ctx: *const libvlc_log_t, name: *const *const c_char,
-        header: *const *const c_char, id: *mut uintptr_t);
+        ctx: *const libvlc_log_t,
+        name: *const *const c_char,
+        header: *const *const c_char,
+        id: *mut uintptr_t,
+    );
     pub fn libvlc_log_unset(_: *mut libvlc_instance_t);
     pub fn libvlc_log_set(instance: *mut libvlc_instance_t, cb: libvlc_log_cb, data: *mut c_void);
     pub fn libvlc_log_set_file(_: *mut libvlc_instance_t, stream: *mut FILE);
     pub fn libvlc_module_description_list_release(p_list: *mut libvlc_module_description_t);
     pub fn libvlc_audio_filter_list_get(
-        p_instance: *mut libvlc_instance_t) -> *mut libvlc_module_description_t;
+        p_instance: *mut libvlc_instance_t,
+    ) -> *mut libvlc_module_description_t;
     pub fn libvlc_video_filter_list_get(
-        p_instance: *mut libvlc_instance_t) -> *mut libvlc_module_description_t;
+        p_instance: *mut libvlc_instance_t,
+    ) -> *mut libvlc_module_description_t;
     pub fn libvlc_clock() -> i64;
 }
 
@@ -330,16 +348,14 @@ pub mod libvlc_media_track_info_t_types {
 
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct libvlc_audio_track_t
-{
+pub struct libvlc_audio_track_t {
     pub i_channels: c_uint,
     pub i_rate: c_uint,
 }
 
 #[derive(Clone, Copy)]
 #[repr(C)]
-pub struct libvlc_video_track_t
-{
+pub struct libvlc_video_track_t {
     pub i_height: c_uint,
     pub i_width: c_uint,
     pub i_sar_num: c_uint,
@@ -394,8 +410,7 @@ impl libvlc_media_track_t {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
-pub enum libvlc_video_orient_t
-{
+pub enum libvlc_video_orient_t {
     libvlc_video_orient_top_left,
     libvlc_video_orient_top_right,
     libvlc_video_orient_bottom_left,
@@ -403,46 +418,60 @@ pub enum libvlc_video_orient_t
     libvlc_video_orient_left_top,
     libvlc_video_orient_left_bottom,
     libvlc_video_orient_right_top,
-    libvlc_video_orient_right_bottom
+    libvlc_video_orient_right_bottom,
 }
 
 extern "C" {
-    pub fn libvlc_media_new_location(p_instance: *mut libvlc_instance_t, psz_mrl: *const c_char)
-                                     -> *mut libvlc_media_t;
-    pub fn libvlc_media_new_path(p_instance: *mut libvlc_instance_t, path: *const c_char)
-                                 -> *mut libvlc_media_t;
-    pub fn libvlc_media_new_fd(p_instance: *mut libvlc_instance_t, fd: c_int)
-                               -> *mut libvlc_media_t;
-    pub fn libvlc_media_as_node(p_instance: *mut libvlc_instance_t, psz_name: *const c_char)
-                                -> *mut libvlc_media_t;
+    pub fn libvlc_media_new_location(
+        p_instance: *mut libvlc_instance_t,
+        psz_mrl: *const c_char,
+    ) -> *mut libvlc_media_t;
+    pub fn libvlc_media_new_path(
+        p_instance: *mut libvlc_instance_t,
+        path: *const c_char,
+    ) -> *mut libvlc_media_t;
+    pub fn libvlc_media_new_fd(
+        p_instance: *mut libvlc_instance_t,
+        fd: c_int,
+    ) -> *mut libvlc_media_t;
+    pub fn libvlc_media_as_node(
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+    ) -> *mut libvlc_media_t;
     pub fn libvlc_media_add_option(p_md: *mut libvlc_media_t, psz_options: *const c_char);
     pub fn libvlc_media_add_option_flag(
-        p_md: *mut libvlc_media_t, psz_options: *const c_char, i_flags: c_uint);
+        p_md: *mut libvlc_media_t,
+        psz_options: *const c_char,
+        i_flags: c_uint,
+    );
     pub fn libvlc_media_retain(p_md: *mut libvlc_media_t);
     pub fn libvlc_media_release(p_md: *mut libvlc_media_t);
     pub fn libvlc_media_get_mrl(p_md: *mut libvlc_media_t) -> *mut c_char;
     pub fn libvlc_media_duplicate(p_md: *mut libvlc_media_t) -> *mut libvlc_media_t;
     pub fn libvlc_media_get_meta(p_md: *mut libvlc_media_t, e_meta: libvlc_meta_t) -> *mut c_char;
-    pub fn libvlc_media_set_meta(p_md: *mut libvlc_media_t, e_meta: libvlc_meta_t,
-                                 psz_value: *const c_char);
+    pub fn libvlc_media_set_meta(
+        p_md: *mut libvlc_media_t,
+        e_meta: libvlc_meta_t,
+        psz_value: *const c_char,
+    );
     pub fn libvlc_media_save_meta(p_md: *mut libvlc_media_t) -> c_int;
     pub fn libvlc_media_get_state(p_md: *mut libvlc_media_t) -> libvlc_state_t;
-    pub fn libvlc_media_get_stats(p_md: *mut libvlc_media_t, p_stats: *mut libvlc_media_stats_t)
-                                  -> c_int;
-    pub fn libvlc_media_subitems(p_md: *mut libvlc_media_t)
-                                 -> *mut libvlc_media_list_t;
-    pub fn libvlc_media_event_manager(p_md: *mut libvlc_media_t)
-                                      -> *mut libvlc_event_manager_t;
-    pub fn libvlc_media_get_duration(p_md: *mut libvlc_media_t)
-                                     -> libvlc_time_t;
+    pub fn libvlc_media_get_stats(
+        p_md: *mut libvlc_media_t,
+        p_stats: *mut libvlc_media_stats_t,
+    ) -> c_int;
+    pub fn libvlc_media_subitems(p_md: *mut libvlc_media_t) -> *mut libvlc_media_list_t;
+    pub fn libvlc_media_event_manager(p_md: *mut libvlc_media_t) -> *mut libvlc_event_manager_t;
+    pub fn libvlc_media_get_duration(p_md: *mut libvlc_media_t) -> libvlc_time_t;
     pub fn libvlc_media_parse(p_md: *mut libvlc_media_t);
     pub fn libvlc_media_parse_async(p_md: *mut libvlc_media_t);
     pub fn libvlc_media_is_parsed(p_md: *mut libvlc_media_t) -> c_int;
-    pub fn libvlc_media_set_user_data(p_md: *mut libvlc_media_t,
-                                      p_new_user_data: *mut c_void);
+    pub fn libvlc_media_set_user_data(p_md: *mut libvlc_media_t, p_new_user_data: *mut c_void);
     pub fn libvlc_media_get_user_data(p_md: *mut libvlc_media_t) -> *mut c_void;
-    pub fn libvlc_media_tracks_get(p_md: *mut libvlc_media_t,
-                                   tracks: *mut *mut *mut libvlc_media_track_t) -> c_uint;
+    pub fn libvlc_media_tracks_get(
+        p_md: *mut libvlc_media_t,
+        tracks: *mut *mut *mut libvlc_media_track_t,
+    ) -> c_uint;
     pub fn libvlc_media_tracks_release(p_tracks: *mut *mut libvlc_media_track_t, i_count: c_uint);
 }
 
@@ -478,84 +507,80 @@ pub struct libvlc_audio_output_device_t {
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub struct libvlc_rectangle_t {
-    pub top: c_int, pub left: c_int, pub bottom: c_int, pub right: c_int,
+    pub top: c_int,
+    pub left: c_int,
+    pub bottom: c_int,
+    pub right: c_int,
 }
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
-pub struct libvlc_video_setup_device_cfg_t
-{
-    pub hardware_decoding: bool
+pub struct libvlc_video_setup_device_cfg_t {
+    pub hardware_decoding: bool,
 }
 
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct libvlc_video_setup_device_info_t
-{
-    pub u: libvlc_video_setup_device_info_t_types::u
+pub struct libvlc_video_setup_device_info_t {
+    pub u: libvlc_video_setup_device_info_t_types::u,
 }
 
-pub mod libvlc_video_setup_device_info_t_types{
-    use libc::{c_void, c_int};
+pub mod libvlc_video_setup_device_info_t_types {
+    use libc::{c_int, c_void};
 
-#[repr(C)]
-#[derive(Clone, Copy, Debug)]
-    pub struct d3d11{
+    #[repr(C)]
+    #[derive(Clone, Copy, Debug)]
+    pub struct d3d11 {
         device_context: *mut c_void,
-        context_mutex: *mut c_void
+        context_mutex: *mut c_void,
     }
 
     #[repr(C)]
     #[derive(Clone, Copy, Debug)]
-    pub struct d3d9{
+    pub struct d3d9 {
         device: *mut c_void,
-        adapter: c_int
+        adapter: c_int,
     }
-#[repr(C)]
-#[derive(Clone, Copy)]
+    #[repr(C)]
+    #[derive(Clone, Copy)]
     pub union u {
-        d3d11:d3d11,
-        d3d9:d3d9
+        d3d11: d3d11,
+        d3d9: d3d9,
     }
 }
 
-
-
 #[repr(C)]
 #[derive(Clone, Copy)]
-pub struct libvlc_video_output_cfg_t
-{
+pub struct libvlc_video_output_cfg_t {
     pub u: libvlc_video_output_cfg_t_types::u,
     /** Video is full range or studio/limited range. */
-    pub full_range:bool,
+    pub full_range: bool,
     /** video color space */
-
-    pub colorspace:libvlc_video_color_space_t,
+    pub colorspace: libvlc_video_color_space_t,
     /** video color primaries */
-    pub primaries:libvlc_video_color_primaries_t,
+    pub primaries: libvlc_video_color_primaries_t,
     /** video transfer function */
-    pub transfer:libvlc_video_transfer_func_t,
+    pub transfer: libvlc_video_transfer_func_t,
     /** video surface orientation */
-    pub orientation: libvlc_video_orient_t
+    pub orientation: libvlc_video_orient_t,
 }
 
-pub mod libvlc_video_output_cfg_t_types{
+pub mod libvlc_video_output_cfg_t_types {
     use libc::{c_int, c_uint, c_void};
 
     #[repr(C)]
     #[derive(Clone, Copy)]
-    pub union u{
+    pub union u {
         pub dxgi_format: c_int,
         pub d3d9_format: c_uint,
         pub opengl_format: c_int,
-        pub p_surface: *mut c_void
+        pub p_surface: *mut c_void,
     }
 }
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
-pub  struct libvlc_video_render_cfg_t
-{
+pub struct libvlc_video_render_cfg_t {
     /** rendering video width in pixel */
     pub width: c_uint,
     /** rendering video height in pixel */
@@ -563,28 +588,26 @@ pub  struct libvlc_video_render_cfg_t
     /** rendering video bit depth in bits per channel */
     pub bitdepth: c_uint,
     /** video is full range or studio/limited range */
-    pub full_range:bool,
+    pub full_range: bool,
     /** video color space */
-    pub colorspace:libvlc_video_color_space_t,
+    pub colorspace: libvlc_video_color_space_t,
     /** video color primaries */
-    pub primaries:libvlc_video_color_primaries_t,
+    pub primaries: libvlc_video_color_primaries_t,
     /** video transfer function */
-    pub transfer:libvlc_video_transfer_func_t,
+    pub transfer: libvlc_video_transfer_func_t,
     /** device used for rendering, IDirect3DDevice9* for D3D9 */
-    pub device: *mut c_void
+    pub device: *mut c_void,
 }
-
-
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub enum libvlc_video_color_primaries_t {
     libvlc_video_primaries_BT601_525 = 1,
     libvlc_video_primaries_BT601_625 = 2,
-    libvlc_video_primaries_BT709     = 3,
-    libvlc_video_primaries_BT2020    = 4,
-    libvlc_video_primaries_DCI_P3    = 5,
-    libvlc_video_primaries_BT470_M   = 6,
+    libvlc_video_primaries_BT709 = 3,
+    libvlc_video_primaries_BT2020 = 4,
+    libvlc_video_primaries_DCI_P3 = 5,
+    libvlc_video_primaries_BT470_M = 6,
 }
 
 /**
@@ -593,8 +616,8 @@ pub enum libvlc_video_color_primaries_t {
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub enum libvlc_video_color_space_t {
-    libvlc_video_colorspace_BT601  = 1,
-    libvlc_video_colorspace_BT709  = 2,
+    libvlc_video_colorspace_BT601 = 1,
+    libvlc_video_colorspace_BT709 = 2,
     libvlc_video_colorspace_BT2020 = 3,
 }
 
@@ -604,14 +627,14 @@ pub enum libvlc_video_color_space_t {
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub enum libvlc_video_transfer_func_t {
-    libvlc_video_transfer_func_LINEAR     = 1,
-    libvlc_video_transfer_func_SRGB       = 2,
-    libvlc_video_transfer_func_BT470_BG   = 3,
-    libvlc_video_transfer_func_BT470_M    = 4,
-    libvlc_video_transfer_func_BT709      = 5,
-    libvlc_video_transfer_func_PQ         = 6,
-    libvlc_video_transfer_func_SMPTE_240  = 7,
-    libvlc_video_transfer_func_HLG        = 8,
+    libvlc_video_transfer_func_LINEAR = 1,
+    libvlc_video_transfer_func_SRGB = 2,
+    libvlc_video_transfer_func_BT470_BG = 3,
+    libvlc_video_transfer_func_BT470_M = 4,
+    libvlc_video_transfer_func_BT709 = 5,
+    libvlc_video_transfer_func_PQ = 6,
+    libvlc_video_transfer_func_SMPTE_240 = 7,
+    libvlc_video_transfer_func_HLG = 8,
 }
 
 #[repr(C)]
@@ -652,32 +675,32 @@ pub enum libvlc_video_logo_option_t {
     libvlc_logo_delay,
     libvlc_logo_repeat,
     libvlc_logo_opacity,
-    libvlc_logo_position
+    libvlc_logo_position,
 }
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub enum libvlc_audio_output_device_types_t {
-    libvlc_AudioOutputDevice_Error  = -1,
-    libvlc_AudioOutputDevice_Mono   =  1,
-    libvlc_AudioOutputDevice_Stereo =  2,
-    libvlc_AudioOutputDevice_2F2R   =  4,
-    libvlc_AudioOutputDevice_3F2R   =  5,
-    libvlc_AudioOutputDevice_5_1    =  6,
-    libvlc_AudioOutputDevice_6_1    =  7,
-    libvlc_AudioOutputDevice_7_1    =  8,
-    libvlc_AudioOutputDevice_SPDIF  = 10
+    libvlc_AudioOutputDevice_Error = -1,
+    libvlc_AudioOutputDevice_Mono = 1,
+    libvlc_AudioOutputDevice_Stereo = 2,
+    libvlc_AudioOutputDevice_2F2R = 4,
+    libvlc_AudioOutputDevice_3F2R = 5,
+    libvlc_AudioOutputDevice_5_1 = 6,
+    libvlc_AudioOutputDevice_6_1 = 7,
+    libvlc_AudioOutputDevice_7_1 = 8,
+    libvlc_AudioOutputDevice_SPDIF = 10,
 }
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub enum libvlc_audio_output_channel_t {
-    libvlc_AudioChannel_Error   = -1,
-    libvlc_AudioChannel_Stereo  =  1,
-    libvlc_AudioChannel_RStereo =  2,
-    libvlc_AudioChannel_Left    =  3,
-    libvlc_AudioChannel_Right   =  4,
-    libvlc_AudioChannel_Dolbys  =  5
+    libvlc_AudioChannel_Error = -1,
+    libvlc_AudioChannel_Stereo = 1,
+    libvlc_AudioChannel_RStereo = 2,
+    libvlc_AudioChannel_Left = 3,
+    libvlc_AudioChannel_Right = 4,
+    libvlc_AudioChannel_Dolbys = 5,
 }
 
 #[repr(C)]
@@ -696,90 +719,141 @@ pub enum libvlc_video_engine_t {
 #[repr(C)]
 #[derive(Clone, Copy, Debug)]
 pub enum libvlc_video_metadata_type_t {
-    libvlc_video_metadata_frame_hdr10
+    libvlc_video_metadata_frame_hdr10,
 }
 
-pub type libvlc_video_lock_cb = Option<unsafe extern "C" fn(*mut c_void, *mut c_void) -> *mut c_void>;
-pub type libvlc_video_unlock_cb = Option<unsafe extern "C" fn(
-    *mut c_void, *mut c_void, *const *mut c_void)>;
+pub type libvlc_video_lock_cb =
+    Option<unsafe extern "C" fn(*mut c_void, *mut c_void) -> *mut c_void>;
+pub type libvlc_video_unlock_cb =
+    Option<unsafe extern "C" fn(*mut c_void, *mut c_void, *const *mut c_void)>;
 pub type libvlc_video_display_cb = Option<unsafe extern "C" fn(*mut c_void, *mut c_void)>;
-pub type libvlc_video_format_cb = Option<unsafe extern "C" fn(
-    *mut *mut c_void, *mut c_char, *mut c_uint, *mut c_uint, *mut c_uint, *mut c_uint)>;
+pub type libvlc_video_format_cb = Option<
+    unsafe extern "C" fn(
+        *mut *mut c_void,
+        *mut c_char,
+        *mut c_uint,
+        *mut c_uint,
+        *mut c_uint,
+        *mut c_uint,
+    ),
+>;
 pub type libvlc_video_cleanup_cb = Option<unsafe extern "C" fn(*mut c_void)>;
-pub type libvlc_audio_play_cb = Option<unsafe extern "C" fn(*mut c_void, *const c_void, c_uint, i64)>;
+pub type libvlc_audio_play_cb =
+    Option<unsafe extern "C" fn(*mut c_void, *const c_void, c_uint, i64)>;
 pub type libvlc_audio_pause_cb = Option<unsafe extern "C" fn(*mut c_void, i64)>;
 pub type libvlc_audio_resume_cb = Option<unsafe extern "C" fn(*mut c_void, i64)>;
 pub type libvlc_audio_flush_cb = Option<unsafe extern "C" fn(*mut c_void, i64)>;
 pub type libvlc_audio_drain_cb = Option<unsafe extern "C" fn(*mut c_void)>;
 pub type libvlc_audio_set_volume_cb = Option<unsafe extern "C" fn(*mut c_void, c_float, c_bool)>;
-pub type libvlc_audio_setup_cb = Option<unsafe extern "C" fn(
-    *mut *mut c_void, *mut c_char, *mut c_uint, *mut c_uint)>;
+pub type libvlc_audio_setup_cb =
+    Option<unsafe extern "C" fn(*mut *mut c_void, *mut c_char, *mut c_uint, *mut c_uint)>;
 
 pub type libvlc_video_output_resize_cb = Option<unsafe extern "C" fn(*mut c_void, c_uint, c_uint)>;
 
 pub type libvlc_audio_cleanup_cb = Option<unsafe extern "C" fn(*mut c_void)>;
-pub type libvlc_video_output_setup_cb = Option<unsafe extern "C" fn(*mut *mut c_void, *const libvlc_video_setup_device_cfg_t, *mut libvlc_video_setup_device_info_t)->bool>;
-pub type libvlc_video_output_cleanup_cb =Option<unsafe extern "C" fn(*mut c_void)>;
-pub type libvlc_video_output_set_resize_cb = Option<unsafe extern "C" fn(*mut c_void, libvlc_video_output_resize_cb, *mut c_void)>;
-pub type libvlc_video_update_output_cb = Option<unsafe extern "C" fn(*mut c_void, *const libvlc_video_render_cfg_t, *mut libvlc_video_output_cfg_t)->bool>;
+pub type libvlc_video_output_setup_cb = Option<
+    unsafe extern "C" fn(
+        *mut *mut c_void,
+        *const libvlc_video_setup_device_cfg_t,
+        *mut libvlc_video_setup_device_info_t,
+    ) -> bool,
+>;
+pub type libvlc_video_output_cleanup_cb = Option<unsafe extern "C" fn(*mut c_void)>;
+pub type libvlc_video_output_set_resize_cb =
+    Option<unsafe extern "C" fn(*mut c_void, libvlc_video_output_resize_cb, *mut c_void)>;
+pub type libvlc_video_update_output_cb = Option<
+    unsafe extern "C" fn(
+        *mut c_void,
+        *const libvlc_video_render_cfg_t,
+        *mut libvlc_video_output_cfg_t,
+    ) -> bool,
+>;
 pub type libvlc_video_swap_cb = Option<unsafe extern "C" fn(*mut c_void)>;
-pub type libvlc_video_makeCurrent_cb = Option<unsafe extern "C" fn(*mut c_void, bool)->bool>;
-pub type libvlc_video_getProcAddress_cb = Option<unsafe extern "C" fn(*mut c_void, *const i8)->*mut c_void>;
-pub type libvlc_video_frameMetadata_cb = Option<unsafe extern "C" fn(*mut c_void, libvlc_video_metadata_type_t, *const c_void)>;
-pub type libvlc_video_output_select_plane_cb = Option<unsafe extern "C" fn(*mut c_void, usize, *mut c_void)>;
-
+pub type libvlc_video_makeCurrent_cb = Option<unsafe extern "C" fn(*mut c_void, bool) -> bool>;
+pub type libvlc_video_getProcAddress_cb =
+    Option<unsafe extern "C" fn(*mut c_void, *const i8) -> *mut c_void>;
+pub type libvlc_video_frameMetadata_cb =
+    Option<unsafe extern "C" fn(*mut c_void, libvlc_video_metadata_type_t, *const c_void)>;
+pub type libvlc_video_output_select_plane_cb =
+    Option<unsafe extern "C" fn(*mut c_void, usize, *mut c_void)>;
 
 extern "C" {
-    pub fn libvlc_media_player_new(p_libvlc_instance: *mut libvlc_instance_t)
-                                   -> *mut libvlc_media_player_t;
-    pub fn libvlc_media_player_new_from_media(p_md: *mut libvlc_media_t)
-                                              -> *mut libvlc_media_player_t;
+    pub fn libvlc_media_player_new(
+        p_libvlc_instance: *mut libvlc_instance_t,
+    ) -> *mut libvlc_media_player_t;
+    pub fn libvlc_media_player_new_from_media(
+        p_md: *mut libvlc_media_t,
+    ) -> *mut libvlc_media_player_t;
     pub fn libvlc_media_player_release(p_mi: *mut libvlc_media_player_t);
     pub fn libvlc_media_player_retain(p_mi: *mut libvlc_media_player_t);
-    pub fn libvlc_media_player_set_media(p_mi: *mut libvlc_media_player_t,
-                                         p_md: *mut libvlc_media_t);
+    pub fn libvlc_media_player_set_media(
+        p_mi: *mut libvlc_media_player_t,
+        p_md: *mut libvlc_media_t,
+    );
     pub fn libvlc_media_player_get_media(p_mi: *mut libvlc_media_player_t) -> *mut libvlc_media_t;
-    pub fn libvlc_media_player_event_manager(p_mi: *mut libvlc_media_player_t)
-                                             -> *mut libvlc_event_manager_t;
+    pub fn libvlc_media_player_event_manager(
+        p_mi: *mut libvlc_media_player_t,
+    ) -> *mut libvlc_event_manager_t;
     pub fn libvlc_media_player_is_playing(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_media_player_play(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_media_player_set_pause(mp: *mut libvlc_media_player_t, do_pause: c_int);
     pub fn libvlc_media_player_pause(p_mi: *mut libvlc_media_player_t);
     pub fn libvlc_media_player_stop(p_mi: *mut libvlc_media_player_t);
     pub fn libvlc_video_set_callbacks(
-        mp: *mut libvlc_media_player_t, lock: libvlc_video_lock_cb,
-        unlock: libvlc_video_unlock_cb, display: libvlc_video_display_cb,
-        opaque: *mut c_void);
+        mp: *mut libvlc_media_player_t,
+        lock: libvlc_video_lock_cb,
+        unlock: libvlc_video_unlock_cb,
+        display: libvlc_video_display_cb,
+        opaque: *mut c_void,
+    );
     pub fn libvlc_video_set_format(
-        mp: *mut libvlc_media_player_t, chroma: *const c_char, width: c_uint, height: c_uint,
-        pitch: c_uint);
+        mp: *mut libvlc_media_player_t,
+        chroma: *const c_char,
+        width: c_uint,
+        height: c_uint,
+        pitch: c_uint,
+    );
     pub fn libvlc_video_set_format_callbacks(
-        mp: *mut libvlc_media_player_t, setup: libvlc_video_format_cb,
-        cleanup: libvlc_video_cleanup_cb);
+        mp: *mut libvlc_media_player_t,
+        setup: libvlc_video_format_cb,
+        cleanup: libvlc_video_cleanup_cb,
+    );
     pub fn libvlc_media_player_set_nsobject(
-        p_mi: *mut libvlc_media_player_t, drawable: *mut c_void);
+        p_mi: *mut libvlc_media_player_t,
+        drawable: *mut c_void,
+    );
     pub fn libvlc_media_player_get_nsobject(p_mi: *mut libvlc_media_player_t) -> *mut c_void;
-    pub fn libvlc_media_player_set_xwindow(
-        p_mi: *mut libvlc_media_player_t, drawable: u32);
+    pub fn libvlc_media_player_set_xwindow(p_mi: *mut libvlc_media_player_t, drawable: u32);
     pub fn libvlc_media_player_get_xwindow(p_mi: *mut libvlc_media_player_t) -> u32;
-    pub fn libvlc_media_player_set_hwnd(
-        p_mi: *mut libvlc_media_player_t, drawable: *mut c_void);
+    pub fn libvlc_media_player_set_hwnd(p_mi: *mut libvlc_media_player_t, drawable: *mut c_void);
     pub fn libvlc_media_player_get_hwnd(p_mi: *mut libvlc_media_player_t) -> *mut c_void;
     pub fn libvlc_audio_set_callbacks(
-        mp: *mut libvlc_media_player_t, play: libvlc_audio_play_cb, pause: libvlc_audio_pause_cb,
-        resume: libvlc_audio_resume_cb, flush: libvlc_audio_flush_cb,
-        drain: libvlc_audio_drain_cb, opaque: *mut c_void);
+        mp: *mut libvlc_media_player_t,
+        play: libvlc_audio_play_cb,
+        pause: libvlc_audio_pause_cb,
+        resume: libvlc_audio_resume_cb,
+        flush: libvlc_audio_flush_cb,
+        drain: libvlc_audio_drain_cb,
+        opaque: *mut c_void,
+    );
     pub fn libvlc_audio_set_volume_callback(
-        mp: *mut libvlc_media_player_t, set_volume: libvlc_audio_set_volume_cb);
+        mp: *mut libvlc_media_player_t,
+        set_volume: libvlc_audio_set_volume_cb,
+    );
     pub fn libvlc_audio_set_format_callbacks(
-        mp: *mut libvlc_media_player_t, setup: libvlc_audio_setup_cb,
-        cleanup: libvlc_audio_cleanup_cb);
+        mp: *mut libvlc_media_player_t,
+        setup: libvlc_audio_setup_cb,
+        cleanup: libvlc_audio_cleanup_cb,
+    );
     pub fn libvlc_audio_set_format(
-        mp: *mut libvlc_media_player_t, format: *const c_char, rate: c_uint, channels: c_uint);
+        mp: *mut libvlc_media_player_t,
+        format: *const c_char,
+        rate: c_uint,
+        channels: c_uint,
+    );
     pub fn libvlc_media_player_get_length(p_mi: *mut libvlc_media_player_t) -> libvlc_time_t;
     pub fn libvlc_media_player_get_time(p_mi: *mut libvlc_media_player_t) -> libvlc_time_t;
-    pub fn libvlc_media_player_set_time(
-        p_mi: *mut libvlc_media_player_t, i_time: libvlc_time_t);
+    pub fn libvlc_media_player_set_time(p_mi: *mut libvlc_media_player_t, i_time: libvlc_time_t);
     pub fn libvlc_media_player_get_position(p_mi: *mut libvlc_media_player_t) -> c_float;
     pub fn libvlc_media_player_set_position(p_mi: *mut libvlc_media_player_t, f_pos: c_float);
     pub fn libvlc_media_player_set_chapter(p_mi: *mut libvlc_media_player_t, i_chapter: c_int);
@@ -788,7 +862,9 @@ extern "C" {
     pub fn libvlc_media_player_will_play(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_media_player_set_title(p_mi: *mut libvlc_media_player_t, i_title: c_int);
     pub fn libvlc_media_player_get_chapter_count_for_title(
-        p_mi: *mut libvlc_media_player_t, i_title: c_int) -> c_int;
+        p_mi: *mut libvlc_media_player_t,
+        i_title: c_int,
+    ) -> c_int;
     pub fn libvlc_media_player_get_title(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_media_player_get_title_count(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_media_player_previous_chapter(p_mi: *mut libvlc_media_player_t);
@@ -804,71 +880,122 @@ extern "C" {
     pub fn libvlc_media_player_next_frame(p_mi: *mut libvlc_media_player_t);
     pub fn libvlc_media_player_navigate(p_mi: *mut libvlc_media_player_t, navigate: c_uint);
     pub fn libvlc_media_player_set_video_title_display(
-        p_mi: *mut libvlc_media_player_t, position: libvlc_position_t, timeout: c_uint);
-    pub fn libvlc_track_description_list_release(p_track_description: *mut libvlc_track_description_t);
+        p_mi: *mut libvlc_media_player_t,
+        position: libvlc_position_t,
+        timeout: c_uint,
+    );
+    pub fn libvlc_track_description_list_release(
+        p_track_description: *mut libvlc_track_description_t,
+    );
     pub fn libvlc_toggle_fullscreen(p_mi: *mut libvlc_media_player_t);
     pub fn libvlc_set_fullscreen(p_mi: *mut libvlc_media_player_t, b_fullscreen: c_int);
     pub fn libvlc_get_fullscreen(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_video_set_key_input(p_mi: *mut libvlc_media_player_t, on: c_uint);
     pub fn libvlc_video_set_mouse_input(p_mi: *mut libvlc_media_player_t, on: c_uint);
     pub fn libvlc_video_get_size(
-        p_mi: *mut libvlc_media_player_t, num: c_uint, px: *mut c_uint, py: *mut c_uint) -> c_int;
+        p_mi: *mut libvlc_media_player_t,
+        num: c_uint,
+        px: *mut c_uint,
+        py: *mut c_uint,
+    ) -> c_int;
     pub fn libvlc_video_get_cursor(
-        p_mi: *mut libvlc_media_player_t, num: c_uint, px: *mut c_int, py: *mut c_int) -> c_int;
+        p_mi: *mut libvlc_media_player_t,
+        num: c_uint,
+        px: *mut c_int,
+        py: *mut c_int,
+    ) -> c_int;
     pub fn libvlc_video_get_scale(p_mi: *mut libvlc_media_player_t) -> c_float;
     pub fn libvlc_video_set_scale(p_mi: *mut libvlc_media_player_t, f_factor: c_float);
     pub fn libvlc_video_get_aspect_ratio(p_mi: *mut libvlc_media_player_t) -> *mut c_char;
-    pub fn libvlc_video_set_aspect_ratio(p_mi: *mut libvlc_media_player_t, psz_aspect: *const c_char);
+    pub fn libvlc_video_set_aspect_ratio(
+        p_mi: *mut libvlc_media_player_t,
+        psz_aspect: *const c_char,
+    );
     pub fn libvlc_video_get_spu(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_video_get_spu_count(p_mi: *mut libvlc_media_player_t) -> c_int;
-    pub fn libvlc_video_get_spu_description(p_mi: *mut libvlc_media_player_t)
-     -> *mut libvlc_track_description_t;
+    pub fn libvlc_video_get_spu_description(
+        p_mi: *mut libvlc_media_player_t,
+    ) -> *mut libvlc_track_description_t;
     pub fn libvlc_video_set_spu(p_mi: *mut libvlc_media_player_t, i_spu: c_int) -> c_int;
     pub fn libvlc_video_set_subtitle_file(
-        p_mi: *mut libvlc_media_player_t, psz_subtitle: *const c_char) -> c_int;
+        p_mi: *mut libvlc_media_player_t,
+        psz_subtitle: *const c_char,
+    ) -> c_int;
     pub fn libvlc_video_get_spu_delay(p_mi: *mut libvlc_media_player_t) -> i64;
-    pub fn libvlc_video_set_spu_delay(
-        p_mi: *mut libvlc_media_player_t, i_delay: i64) -> c_int;
+    pub fn libvlc_video_set_spu_delay(p_mi: *mut libvlc_media_player_t, i_delay: i64) -> c_int;
     pub fn libvlc_video_get_title_description(
-        p_mi: *mut libvlc_media_player_t) -> *mut libvlc_track_description_t;
+        p_mi: *mut libvlc_media_player_t,
+    ) -> *mut libvlc_track_description_t;
     pub fn libvlc_video_get_chapter_description(
-        p_mi: *mut libvlc_media_player_t, i_title: c_int) -> *mut libvlc_track_description_t;
+        p_mi: *mut libvlc_media_player_t,
+        i_title: c_int,
+    ) -> *mut libvlc_track_description_t;
     pub fn libvlc_video_get_crop_geometry(p_mi: *mut libvlc_media_player_t) -> *mut c_char;
     pub fn libvlc_video_set_crop_geometry(
-        p_mi: *mut libvlc_media_player_t, psz_geometry: *const c_char);
+        p_mi: *mut libvlc_media_player_t,
+        psz_geometry: *const c_char,
+    );
     pub fn libvlc_video_get_teletext(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_video_set_teletext(p_mi: *mut libvlc_media_player_t, i_page: c_int);
     pub fn libvlc_toggle_teletext(p_mi: *mut libvlc_media_player_t);
     pub fn libvlc_video_get_track_count(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_video_get_track_description(
-        p_mi: *mut libvlc_media_player_t) -> *mut libvlc_track_description_t;
+        p_mi: *mut libvlc_media_player_t,
+    ) -> *mut libvlc_track_description_t;
     pub fn libvlc_video_get_track(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_video_set_track(p_mi: *mut libvlc_media_player_t, i_track: c_int) -> c_int;
     pub fn libvlc_video_take_snapshot(
-        p_mi: *mut libvlc_media_player_t, num: c_uint, psz_filepath: *const c_char,
-        i_width: c_uint, i_height: c_uint) -> c_int;
+        p_mi: *mut libvlc_media_player_t,
+        num: c_uint,
+        psz_filepath: *const c_char,
+        i_width: c_uint,
+        i_height: c_uint,
+    ) -> c_int;
     pub fn libvlc_video_set_deinterlace(p_mi: *mut libvlc_media_player_t, psz_mode: *const c_char);
     pub fn libvlc_video_get_marquee_int(p_mi: *mut libvlc_media_player_t, option: c_uint) -> c_int;
     pub fn libvlc_video_get_marquee_string(
-        p_mi: *mut libvlc_media_player_t, option: c_uint) -> *mut c_char;
+        p_mi: *mut libvlc_media_player_t,
+        option: c_uint,
+    ) -> *mut c_char;
     pub fn libvlc_video_set_marquee_int(
-        p_mi: *mut libvlc_media_player_t, option: c_uint, i_val: c_int);
+        p_mi: *mut libvlc_media_player_t,
+        option: c_uint,
+        i_val: c_int,
+    );
     pub fn libvlc_video_set_marquee_string(
-        p_mi: *mut libvlc_media_player_t, option: c_uint, psz_text: *const c_char);
+        p_mi: *mut libvlc_media_player_t,
+        option: c_uint,
+        psz_text: *const c_char,
+    );
     pub fn libvlc_video_get_logo_int(p_mi: *mut libvlc_media_player_t, option: c_uint) -> c_int;
-    pub fn libvlc_video_set_logo_int(p_mi: *mut libvlc_media_player_t, option: c_uint, value: c_int);
+    pub fn libvlc_video_set_logo_int(
+        p_mi: *mut libvlc_media_player_t,
+        option: c_uint,
+        value: c_int,
+    );
     pub fn libvlc_video_set_logo_string(
-        p_mi: *mut libvlc_media_player_t, option: c_uint, psz_value: *const c_char);
-    pub fn libvlc_video_get_adjust_int(
-        p_mi: *mut libvlc_media_player_t, option: c_uint) -> c_int;
+        p_mi: *mut libvlc_media_player_t,
+        option: c_uint,
+        psz_value: *const c_char,
+    );
+    pub fn libvlc_video_get_adjust_int(p_mi: *mut libvlc_media_player_t, option: c_uint) -> c_int;
     pub fn libvlc_video_set_adjust_int(
-        p_mi: *mut libvlc_media_player_t, option: c_uint, value: c_int);
+        p_mi: *mut libvlc_media_player_t,
+        option: c_uint,
+        value: c_int,
+    );
     pub fn libvlc_video_get_adjust_float(
-        p_mi: *mut libvlc_media_player_t, option: c_uint) -> c_float;
+        p_mi: *mut libvlc_media_player_t,
+        option: c_uint,
+    ) -> c_float;
     pub fn libvlc_video_set_adjust_float(
-        p_mi: *mut libvlc_media_player_t, option: c_uint, value: c_float);
+        p_mi: *mut libvlc_media_player_t,
+        option: c_uint,
+        value: c_float,
+    );
 
-    pub fn libvlc_video_set_output_callbacks(p_mi: *mut libvlc_media_player_t,
+    pub fn libvlc_video_set_output_callbacks(
+        p_mi: *mut libvlc_media_player_t,
         engine: libvlc_video_engine_t,
         setup_cb: libvlc_video_output_setup_cb,
         cleanup_cb: libvlc_video_output_cleanup_cb,
@@ -879,19 +1006,29 @@ extern "C" {
         getProcAddress_cb: libvlc_video_getProcAddress_cb,
         metadata_cb: libvlc_video_frameMetadata_cb,
         select_plane_cb: libvlc_video_output_select_plane_cb,
-        opaque: *mut c_void
-    )->bool;
-    pub fn libvlc_audio_output_list_get(p_instance: *mut libvlc_instance_t)
-     -> *mut libvlc_audio_output_t;
+        opaque: *mut c_void,
+    ) -> bool;
+    pub fn libvlc_audio_output_list_get(
+        p_instance: *mut libvlc_instance_t,
+    ) -> *mut libvlc_audio_output_t;
     pub fn libvlc_audio_output_list_release(p_list: *mut libvlc_audio_output_t);
-    pub fn libvlc_audio_output_set(p_mi: *mut libvlc_media_player_t, psz_name: *const c_char) -> c_int;
+    pub fn libvlc_audio_output_set(
+        p_mi: *mut libvlc_media_player_t,
+        psz_name: *const c_char,
+    ) -> c_int;
     pub fn libvlc_audio_output_device_enum(
-        mp: *mut libvlc_media_player_t) -> *mut libvlc_audio_output_device_t;
+        mp: *mut libvlc_media_player_t,
+    ) -> *mut libvlc_audio_output_device_t;
     pub fn libvlc_audio_output_device_list_get(
-        p_instance: *mut libvlc_instance_t, aout: *const c_char) -> *mut libvlc_audio_output_device_t;
+        p_instance: *mut libvlc_instance_t,
+        aout: *const c_char,
+    ) -> *mut libvlc_audio_output_device_t;
     pub fn libvlc_audio_output_device_list_release(p_list: *mut libvlc_audio_output_device_t);
     pub fn libvlc_audio_output_device_set(
-        mp: *mut libvlc_media_player_t, module: *const c_char, device_id: *const c_char);
+        mp: *mut libvlc_media_player_t,
+        module: *const c_char,
+        device_id: *const c_char,
+    );
     pub fn libvlc_audio_toggle_mute(p_mi: *mut libvlc_media_player_t);
     pub fn libvlc_audio_get_mute(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_audio_set_mute(p_mi: *mut libvlc_media_player_t, status: c_int);
@@ -899,7 +1036,8 @@ extern "C" {
     pub fn libvlc_audio_set_volume(p_mi: *mut libvlc_media_player_t, i_volume: c_int) -> c_int;
     pub fn libvlc_audio_get_track_count(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_audio_get_track_description(
-        p_mi: *mut libvlc_media_player_t) -> *mut libvlc_track_description_t;
+        p_mi: *mut libvlc_media_player_t,
+    ) -> *mut libvlc_track_description_t;
     pub fn libvlc_audio_get_track(p_mi: *mut libvlc_media_player_t) -> c_int;
     pub fn libvlc_audio_set_track(p_mi: *mut libvlc_media_player_t, i_track: c_int) -> c_int;
     pub fn libvlc_audio_get_channel(p_mi: *mut libvlc_media_player_t) -> c_int;
@@ -914,14 +1052,23 @@ extern "C" {
     pub fn libvlc_audio_equalizer_new_from_preset(u_index: c_uint) -> *mut libvlc_equalizer_t;
     pub fn libvlc_audio_equalizer_release(p_equalizer: *mut libvlc_equalizer_t);
     pub fn libvlc_audio_equalizer_set_preamp(
-        p_equalizer: *mut libvlc_equalizer_t, f_preamp: c_float) -> c_int;
+        p_equalizer: *mut libvlc_equalizer_t,
+        f_preamp: c_float,
+    ) -> c_int;
     pub fn libvlc_audio_equalizer_get_preamp(p_equalizer: *mut libvlc_equalizer_t) -> c_float;
     pub fn libvlc_audio_equalizer_set_amp_at_index(
-        p_equalizer: *mut libvlc_equalizer_t, f_amp: c_float, u_band: c_uint) -> c_int;
+        p_equalizer: *mut libvlc_equalizer_t,
+        f_amp: c_float,
+        u_band: c_uint,
+    ) -> c_int;
     pub fn libvlc_audio_equalizer_get_amp_at_index(
-        p_equalizer: *mut libvlc_equalizer_t, u_band: c_uint) -> c_float;
+        p_equalizer: *mut libvlc_equalizer_t,
+        u_band: c_uint,
+    ) -> c_float;
     pub fn libvlc_media_player_set_equalizer(
-        p_mi: *mut libvlc_media_player_t, p_equalizer: *mut libvlc_equalizer_t) -> c_int;
+        p_mi: *mut libvlc_media_player_t,
+        p_equalizer: *mut libvlc_equalizer_t,
+    ) -> c_int;
 }
 
 // From libvlc_events.h
@@ -937,7 +1084,7 @@ pub struct libvlc_event_t {
 
 pub mod libvlc_event_t_types {
     use super::*;
-    use libc::{c_int, c_char, c_float};
+    use libc::{c_char, c_float, c_int};
     #[repr(C)]
     #[derive(Clone, Copy)]
     pub union u {
@@ -1104,20 +1251,30 @@ extern "C" {
     pub fn libvlc_media_list_set_media(p_ml: *mut libvlc_media_list_t, p_md: *mut libvlc_media_t);
     pub fn libvlc_media_list_media(p_ml: *mut libvlc_media_list_t) -> *mut libvlc_media_t;
     pub fn libvlc_media_list_add_media(
-        p_ml: *mut libvlc_media_list_t, p_md: *mut libvlc_media_t) -> c_int;
+        p_ml: *mut libvlc_media_list_t,
+        p_md: *mut libvlc_media_t,
+    ) -> c_int;
     pub fn libvlc_media_list_insert_media(
-        p_ml: *mut libvlc_media_list_t, p_md: *mut libvlc_media_t, i_pos: c_int) -> c_int;
+        p_ml: *mut libvlc_media_list_t,
+        p_md: *mut libvlc_media_t,
+        i_pos: c_int,
+    ) -> c_int;
     pub fn libvlc_media_list_remove_index(p_ml: *mut libvlc_media_list_t, i_pos: c_int) -> c_int;
     pub fn libvlc_media_list_count(p_ml: *mut libvlc_media_list_t) -> c_int;
     pub fn libvlc_media_list_item_at_index(
-        p_ml: *mut libvlc_media_list_t, i_pos: c_int) -> *mut libvlc_media_t;
+        p_ml: *mut libvlc_media_list_t,
+        i_pos: c_int,
+    ) -> *mut libvlc_media_t;
     pub fn libvlc_media_list_index_of_item(
-        p_ml: *mut libvlc_media_list_t, p_md: *mut libvlc_media_t) -> c_int;
+        p_ml: *mut libvlc_media_list_t,
+        p_md: *mut libvlc_media_t,
+    ) -> c_int;
     pub fn libvlc_media_list_is_readonly(p_ml: *mut libvlc_media_list_t) -> c_int;
     pub fn libvlc_media_list_lock(p_ml: *mut libvlc_media_list_t);
     pub fn libvlc_media_list_unlock(p_ml: *mut libvlc_media_list_t);
     pub fn libvlc_media_list_event_manager(
-        p_ml: *mut libvlc_media_list_t) -> *mut libvlc_event_manager_t;
+        p_ml: *mut libvlc_media_list_t,
+    ) -> *mut libvlc_event_manager_t;
 }
 
 // From libvlc_media_library.h
@@ -1125,12 +1282,15 @@ extern "C" {
 pub enum libvlc_media_library_t {}
 
 extern "C" {
-    pub fn libvlc_media_library_new(p_instance: *mut libvlc_instance_t) -> *mut libvlc_media_library_t;
+    pub fn libvlc_media_library_new(
+        p_instance: *mut libvlc_instance_t,
+    ) -> *mut libvlc_media_library_t;
     pub fn libvlc_media_library_release(p_mlib: *mut libvlc_media_library_t);
     pub fn libvlc_media_library_retain(p_mlib: *mut libvlc_media_library_t);
     pub fn libvlc_media_library_load(p_mlib: *mut libvlc_media_library_t) -> c_int;
     pub fn libvlc_media_library_media_list(
-        p_mlib: *mut libvlc_media_library_t) -> *mut libvlc_media_list_t;
+        p_mlib: *mut libvlc_media_library_t,
+    ) -> *mut libvlc_media_list_t;
 }
 
 // From libvlc_media_discoverer.h
@@ -1139,14 +1299,19 @@ pub enum libvlc_media_discoverer_t {}
 
 extern "C" {
     pub fn libvlc_media_discoverer_new_from_name(
-        p_inst: *mut libvlc_instance_t, psz_name: *const c_char) -> *mut libvlc_media_discoverer_t;
+        p_inst: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+    ) -> *mut libvlc_media_discoverer_t;
     pub fn libvlc_media_discoverer_release(p_mdis: *mut libvlc_media_discoverer_t);
     pub fn libvlc_media_discoverer_localized_name(
-        p_mdis: *mut libvlc_media_discoverer_t) -> *mut c_char;
+        p_mdis: *mut libvlc_media_discoverer_t,
+    ) -> *mut c_char;
     pub fn libvlc_media_discoverer_media_list(
-        p_mdis: *mut libvlc_media_discoverer_t) -> *mut libvlc_media_list_t;
+        p_mdis: *mut libvlc_media_discoverer_t,
+    ) -> *mut libvlc_media_list_t;
     pub fn libvlc_media_discoverer_event_manager(
-        p_mdis: *mut libvlc_media_discoverer_t) -> *mut libvlc_event_manager_t;
+        p_mdis: *mut libvlc_media_discoverer_t,
+    ) -> *mut libvlc_event_manager_t;
     pub fn libvlc_media_discoverer_is_running(p_mdis: *mut libvlc_media_discoverer_t) -> c_int;
 }
 
@@ -1155,49 +1320,110 @@ extern "C" {
 extern "C" {
     pub fn libvlc_vlm_release(p_instance: *mut libvlc_instance_t);
     pub fn libvlc_vlm_add_broadcast(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, psz_input: *const c_char,
-        psz_output: *const c_char, i_options: c_int, ppsz_options: *const *const c_char,
-        b_enabled: c_int, b_loop: c_int) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        psz_input: *const c_char,
+        psz_output: *const c_char,
+        i_options: c_int,
+        ppsz_options: *const *const c_char,
+        b_enabled: c_int,
+        b_loop: c_int,
+    ) -> c_int;
     pub fn libvlc_vlm_add_vod(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, psz_input: *const c_char,
-        i_options: c_int, ppsz_options: *const *const c_char, b_enabled: c_int,
-        psz_mux: *const c_char) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        psz_input: *const c_char,
+        i_options: c_int,
+        ppsz_options: *const *const c_char,
+        b_enabled: c_int,
+        psz_mux: *const c_char,
+    ) -> c_int;
     pub fn libvlc_vlm_del_media(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+    ) -> c_int;
     pub fn libvlc_vlm_set_enabled(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, b_enabled: c_int) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        b_enabled: c_int,
+    ) -> c_int;
     pub fn libvlc_vlm_set_output(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, psz_output: *const c_char) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        psz_output: *const c_char,
+    ) -> c_int;
     pub fn libvlc_vlm_set_input(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, psz_input: *const c_char) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        psz_input: *const c_char,
+    ) -> c_int;
     pub fn libvlc_vlm_add_input(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, psz_input: *const c_char) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        psz_input: *const c_char,
+    ) -> c_int;
     pub fn libvlc_vlm_set_loop(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, b_loop: c_int) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        b_loop: c_int,
+    ) -> c_int;
     pub fn libvlc_vlm_set_mux(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, psz_mux: *const c_char) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        psz_mux: *const c_char,
+    ) -> c_int;
     pub fn libvlc_vlm_change_media(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, psz_input: *const c_char,
-        psz_output: *const c_char, i_options: c_int, ppsz_options: *const *const c_char,
-        b_enabled: c_int, b_loop: c_int) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        psz_input: *const c_char,
+        psz_output: *const c_char,
+        i_options: c_int,
+        ppsz_options: *const *const c_char,
+        b_enabled: c_int,
+        b_loop: c_int,
+    ) -> c_int;
     pub fn libvlc_vlm_play_media(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+    ) -> c_int;
     pub fn libvlc_vlm_stop_media(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+    ) -> c_int;
     pub fn libvlc_vlm_pause_media(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+    ) -> c_int;
     pub fn libvlc_vlm_seek_media(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, f_percentage: c_float) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        f_percentage: c_float,
+    ) -> c_int;
     pub fn libvlc_vlm_show_media(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char) -> *const c_char;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+    ) -> *const c_char;
     pub fn libvlc_vlm_get_media_instance_position(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, i_instance: c_int) -> c_float;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        i_instance: c_int,
+    ) -> c_float;
     pub fn libvlc_vlm_get_media_instance_time(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, i_instance: c_int) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        i_instance: c_int,
+    ) -> c_int;
     pub fn libvlc_vlm_get_media_instance_length(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, i_instance: c_int) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        i_instance: c_int,
+    ) -> c_int;
     pub fn libvlc_vlm_get_media_instance_rate(
-        p_instance: *mut libvlc_instance_t, psz_name: *const c_char, i_instance: c_int) -> c_int;
+        p_instance: *mut libvlc_instance_t,
+        psz_name: *const c_char,
+        i_instance: c_int,
+    ) -> c_int;
     pub fn libvlc_vlm_get_event_manager(
-        p_instance: *mut libvlc_instance_t) -> *mut libvlc_event_manager_t;
+        p_instance: *mut libvlc_instance_t,
+    ) -> *mut libvlc_event_manager_t;
 }

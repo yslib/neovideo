@@ -1,4 +1,4 @@
-use glutin::{PossiblyCurrent, ContextError, ContextWrapper};
+use glutin::{ContextError, ContextWrapper, PossiblyCurrent};
 use winit::window::{Window, WindowBuilder};
 
 use super::egui_app::{AppState, EguiApp};
@@ -40,7 +40,7 @@ impl WinitEguiEventListener {
     }
 
     #[inline]
-    pub unsafe fn make_current(&mut self){
+    pub unsafe fn make_current(&mut self) {
         self.gl_context.take().map(|ctx| {
             self.gl_context = Some(ctx.make_current().expect("make_current error"));
         });

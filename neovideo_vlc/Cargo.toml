@@ -3,6 +3,7 @@ name = 'neovideo_vlc'
 version = "0.0.1"
 authors = ['visysl@outlook.com']
 edition = "2021"
+rpath = true
 
 [dependencies]
 egui_glow = "0.17"
